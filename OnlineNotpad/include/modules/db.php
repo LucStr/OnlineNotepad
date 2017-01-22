@@ -103,36 +103,68 @@ class Database {
 			return $exenumber;
 		}
 
+		function easyConnect(){
+			mysql_connect(DB_SERVER, DB_USER, DB_PASS) or
+				die("Could not connect: " . mysql_error());
+			mysql_select_db(DB_NAME);
+		}
+
+		function easySelect($query){
+			$this->easyConnect();
+			$result = mysql_query($query);
+			$all_arr = array();
+			while ($row = mysql_fetch_array($result, MYSQL_NUM)) {
+					$all_arr[] = $row;
+			}
+			mysql_free_result($result);
+			return $all_arr;
+		}
+
+		function easyQuery($query){
+			$this->easyConnect();
+			if(mysql_query($sql)){
+				return 1;
+			}else{
+				echo "Error: " . $sql . "<br>" . mysql_error();
+				return 0;
+			}
+		}
+
 		function getDocumentsFromPerson($personid){
-			//$query = "SELECT document.Name, document.Content FROM person LEFT JOIN person_document ON person_document.PersonId = person.ID LEFT JOIN document ON person_document.DocumentID = document.ID WHERE person.ID = $personid";
-			$query = "SELECT id, firstname FROM person WHERE person.ID = $personid";
-			return $this->multiquery_dynamic_select($query);
+			return $this->easySelect("SELECT document.Name, document.Content FROM person LEFT JOIN person_document ON person_document.PersonId = person.ID LEFT JOIN document ON person_document.DocumentID = document.ID WHERE person.ID = $personid");
+		}
+
+		function GetUserId($email){
+			$query = "SELECT ID FROM person WHERE email='$email'";
+			$result = $this->easySelect($query);
+			return $result;
 		}
 
 		function AddUser($firstname, $lastname, $email, $password){
 			$encryptet_pw = md5($password);
 			$query = "INSERT INTO person VALUES(NULL, '$firstname', ''$LastName', '$email', ''$encryptet_pw')";
-			$this->prepared_dynamic_sqlcommands($query);
+			return $this->easyQuery($query);
 		}
 
 		function UpdateContent($documentId, $content){
 			$query = "UPDATE document SET document.Content = '$content' WHERE document.ID = $documentId";
-			$this->prepared_dynamic_sqlcommands($query);
+			return $this->easyQuery($query);
 		}
 
 		function CheckCredentials($email, $password){
 			$encryptet_pw = md5($password);
 			$query = "SELECT ID FROM person WHERE email='$email' AND password='$encryptet_pw'";
-			return $this->singlequery_dynamic($query);
+			return $this->easyQuery($query);
 		}
 
 		function CreateDocument($name){
 			$query = "INSERT INTO document VALUES(NULL, '$name', '')";
-			return $this->prepared_dynamic_sqlcommands($stmt);
+			return $this->easyQuery($query);
 		}
 
 		function AlterNameOfDocument($id, $newName){
 			$query = "UPDATE document SET document.Name = '$newName' WHERE document.ID = $id";
+			return $this->easyQuery($query);
 		}
 
 		////////////////////////////////////////////////////////////////////////////////
