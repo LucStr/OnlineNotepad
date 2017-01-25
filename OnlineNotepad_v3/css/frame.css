@@ -1,0 +1,44 @@
+/* CSS Document */
+
+body {
+	margin:0;
+	padding:0;	
+}
+
+
+#header {
+	background-color:#C60;
+}
+
+#navigation {
+	background-color:#FFC;	
+}
+
+#middle {
+	width:100%;
+	clear:both;
+}
+
+#footer {
+	background-color:#FF0;
+	width:100%;
+	clear:both;
+}
+
+.leftbox {
+	float:left;
+	background-color:yellow;	
+	width:10%;
+}
+
+.maincontent {
+	float:left;
+	background-color:#3FF;	
+	width:80%;
+} 
+
+.rigthbox {
+	float:left;
+	background-color:#FCC;	
+	width:10%;
+}  
